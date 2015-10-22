@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Music Player</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_equalizer">Equalizer</string>
+    <!-- Main Activity Navigation Drawer -->
+    <string name="main_activity_title">Your Music</string>
+    <string name="album">Albums</string>
+    <string name="artist">Artists</string>
+    <string name="genres">Genres</string>
+    <string name="songs">Music</string>
+</resources>

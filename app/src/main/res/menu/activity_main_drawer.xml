@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_albums" android:icon="@mipmap/ic_album"
+            android:title="@string/album" />
+        <item android:id="@+id/nav_artist" android:icon="@mipmap/ic_artist"
+            android:title="@string/artist" />
+        <item android:id="@+id/nav_genres" android:icon="@mipmap/ic_genres"
+            android:title="@string/genres" />
+        <item android:id="@+id/nav_songs" android:icon="@mipmap/ic_songs"
+            android:title="@string/songs" />
+    </group>
+
+</menu>
