@@ -1,21 +1,44 @@
 package me.alfredobejarano.papiroplayer;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    private List<String> songs = new ArrayList<String>();
+    private ArrayList<Song> foundedsongs = new ArrayList<Song>();
+    private MediaPlayer mediaplayer = new MediaPlayer();
+    private ArrayAdapter<String> songlist;
+    private ListView songlistview;
+
+    /* Constants */
+    private static final File SD_CARD_PATH = new File(new String(String.valueOf(Environment.getExternalStorageDirectory())+"/"));
+    private MP3Finder mp3finder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +59,16 @@ public class MainActivity extends AppCompatActivity
         this.getSupportActionBar().setTitle(getResources().getString(R.string.main_activity_title));
 
         /* Activity Code Starts Here */
+        songlistview = (ListView) findViewById(R.id.songListView);
+
+        mp3finder = new MP3Finder();
+        foundedsongs = mp3finder.scanDirectory(new File("/storage/sdcard1/Música/Lamb of God/Scrament/"), MainActivity.this);
+
+        songs = mp3finder.getSongsNames(foundedsongs);
+        Log.d("",songs.get(0));
+
+        songlist = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songs);
+        songlistview.setAdapter(songlist);
     }
 
     @Override
@@ -92,3 +125,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 }
+
+
+

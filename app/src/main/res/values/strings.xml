@@ -5,6 +5,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_equalizer">Equalizer</string>
+    <string name="empty_library">No songs founded in device storage</string>
+
     <!-- Main Activity Navigation Drawer -->
     <string name="main_activity_title">Your Music</string>
     <string name="album">Albums</string>
