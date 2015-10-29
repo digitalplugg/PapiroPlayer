@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity
     private ListView songlistview;
 
     /* Constants */
-    private static final File SD_CARD_PATH = new File(new String(String.valueOf(Environment.getExternalStorageDirectory())+"/"));
+    //private static final File SD_CARD_PATH = new File(new String(String.valueOf(Environment.getExternalStorageDirectory())+"/"));
+    private static final File SD_CARD_PATH = new File("/storage/");
     private MP3Finder mp3finder;
 
 
@@ -61,14 +63,21 @@ public class MainActivity extends AppCompatActivity
         /* Activity Code Starts Here */
         songlistview = (ListView) findViewById(R.id.songListView);
 
-        mp3finder = new MP3Finder();
-        foundedsongs = mp3finder.scanDirectory(new File("/storage/sdcard1/Música/Lamb of God/Scrament/"), MainActivity.this);
 
-        songs = mp3finder.getSongsNames(foundedsongs);
-        Log.d("",songs.get(0));
+        try {
+            foundedsongs = new ScanSongs(SD_CARD_PATH, MainActivity.this).execute().get();
+            //songs = mp3finder.getSongsNames(foundedsongs);
+            Log.d("###################",String.valueOf(foundedsongs.get(0).getTitle()));
+        } catch (Exception e) {
+            songs = new ArrayList<String>();
+            songs.add(getResources().getString(R.string.empty_library));
+            Log.d("###################", "Exception!" );
+            e.printStackTrace();
+        }
 
         songlist = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songs);
         songlistview.setAdapter(songlist);
+
     }
 
     @Override
@@ -123,6 +132,41 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+}
+
+class ScanSongs extends AsyncTask< Void, Void, ArrayList<Song> > {
+    private File file;
+    private Context context;
+    private ProgressDialog dialog;
+
+
+    public ScanSongs(File file, Context context) {
+        this.context = context;
+        this.file = file;
+        dialog = new ProgressDialog(context);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        dialog.setMessage(context.getString(R.string.loading_songs));
+        dialog.show();
+    }
+
+    @Override
+    protected ArrayList<Song> doInBackground(Void... params) {
+        ArrayList<Song> songs = new ArrayList<>();
+        MP3Finder finder = new MP3Finder();
+        songs = finder.scanDirectory(file, context);
+        return songs;
+    }
+
+
+    @Override
+    protected void onPostExecute(ArrayList<Song> songs) {
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 }
 

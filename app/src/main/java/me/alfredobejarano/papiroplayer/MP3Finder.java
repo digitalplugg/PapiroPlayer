@@ -30,55 +30,53 @@ public class MP3Finder {
 
     public MP3Finder(){}
 
-    private void findMySongs(File path) {
-        File[] files = path.listFiles(new MP3Filter());
-        if(files != null) {
-            for(File file : files) {
-                /*Obtaining the MP3*/
-                mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
+    private void findMySongs(File file) {
+        /*Obtaining the MP3*/
+        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
 
-                /*Obtaining Metadata*/
-                name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-                album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                songpath = file.getAbsolutePath();
-                track = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
-                cover = mediaMetadataRetriever.getEmbeddedPicture();
+        /*Obtaining Metadata*/
+        name = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+        album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        songpath = file.getAbsolutePath()+file.getName();
+        track = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
+        cover = mediaMetadataRetriever.getEmbeddedPicture();
 
-                /*Creating a new song*/
-                song = new Song(name, artist, album, track, songpath, cover);
+        /*Creating a new song*/
+        song = new Song(name, artist, album, track, songpath, cover);
 
-                /*Adding the song*/
-                songs.add(song);
+        /*Adding the song*/
+        songs.add(song);
 
-                /*Resetting variables*/
-                name = null;
-                artist = null;
-                album = null;
-                songpath = null;
-                track = null;
-                cover = null;
-                song = null;
-            }
-        }
+        /*Resetting variables*/
+        name = null;
+        artist = null;
+        album = null;
+        songpath = null;
+        track = null;
+        cover = null;
+        song = null;
+
     }
 
     public ArrayList<Song> scanDirectory(File path, Context context) {
-        Song error = new Song(context.getResources().getString(R.string.empty_library), null, null, null, null, null);
+        Song error = new Song(context.getResources().getString(R.string.empty_library), "", "", "", "", new byte[0]);
 
-        if(path != null) {
-            File[] files = path.listFiles();
-            if(files != null && files.length > 0) {
-                for(File file : files) {
-                    Log.d("",file.getName());
-                    if(file.isDirectory()) {
-                        scanDirectory(path, context);
-                    } else {
-                        findMySongs(file);
-                    }
+        File[] list = path.listFiles();
+
+        for (File f : list) {
+            if (f.isDirectory()) {
+                scanDirectory(f, context);
+            }
+            else {
+                Log.d("", "File: " + f.getAbsoluteFile());
+                if(new MP3Filter().accept(f,f.getName())) {
+                    findMySongs(f);
                 }
             }
-        } else {
+        }
+
+        if(getFoundedSongs().size() <= 0 || getFoundedSongs() == null) {
             songs.add(error);
         }
 
@@ -102,6 +100,8 @@ public class MP3Finder {
         */
         ArrayList<String> illuminattisongnames = new ArrayList<String>();
 
+        Log.d("##CANCIONES RECIBIDAS: ", String.valueOf(songs.size()));
+
         for(Song song : songs) {
             String title;
 
@@ -109,7 +109,7 @@ public class MP3Finder {
 
             title = song.getTitle();
 
-            if(title == null) {
+            if(title == null || title.equals("")) {
                 title = song.getPath()+" (untitled)";
             }
 

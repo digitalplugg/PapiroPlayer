@@ -7,6 +7,7 @@
     <string name="action_equalizer">Equalizer</string>
     <string name="empty_library">No songs founded in device storage</string>
 
+    <string name="loading_songs">Loading songs...</string>
     <!-- Main Activity Navigation Drawer -->
     <string name="main_activity_title">Your Music</string>
     <string name="album">Albums</string>
